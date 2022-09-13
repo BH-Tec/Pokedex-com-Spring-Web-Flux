@@ -1,12 +1,16 @@
 package com.webFlux.pokedex.controller;
 
 import com.webFlux.pokedex.model.Pokemon;
+import com.webFlux.pokedex.model.PokemonEvent;
 import com.webFlux.pokedex.repository.PokemonRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/pokemons")
@@ -48,6 +52,29 @@ public class PokemonController {
                 })
                 .map(updatePokemon -> ResponseEntity.ok(updatePokemon))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("{id}")
+    public Mono<ResponseEntity<Object>> deletePokemon(@PathVariable(value = "id") String id) {
+        return repository.findById(id)
+                .flatMap(existingPokemon ->
+                    repository.delete(existingPokemon)
+                            .then(Mono.just(ResponseEntity.ok().build()))
+                )
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping
+    public Mono<Void> deleteAllPokemons() {
+        return repository.deleteAll();
+    }
+
+    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<PokemonEvent> getPokemonEvents() {
+        return Flux.interval(Duration.ofSeconds(5))
+                .map(val ->
+                        new PokemonEvent(val, "Pokemonzitos")
+                );
     }
 
 }
