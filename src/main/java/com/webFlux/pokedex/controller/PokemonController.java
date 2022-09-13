@@ -36,18 +36,17 @@ public class PokemonController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Pokemon> savePokemon(@RequestBody Pokemon pokemon) {
-            return repository.save(pokemon);
+        return repository.save(pokemon);
     }
 
     @PutMapping("{id}")
-    public Mono<ResponseEntity<Pokemon>> updatePokemon(@PathVariable (value = "id") String id, @RequestBody Pokemon pokemon) {
+    public Mono<ResponseEntity<Pokemon>> updatePokemon(@PathVariable(value = "id") String id, @RequestBody Pokemon pokemon) {
         return repository.findById(id)
                 .flatMap(existingPokemon -> {
                     existingPokemon.setNome(pokemon.getNome());
                     existingPokemon.setCategoria(pokemon.getCategoria());
                     existingPokemon.setHabilidade(pokemon.getHabilidade());
                     existingPokemon.setPeso(pokemon.getPeso());
-
                     return repository.save(existingPokemon);
                 })
                 .map(updatePokemon -> ResponseEntity.ok(updatePokemon))
@@ -55,11 +54,11 @@ public class PokemonController {
     }
 
     @DeleteMapping("{id}")
-    public Mono<ResponseEntity<Object>> deletePokemon(@PathVariable(value = "id") String id) {
+    public Mono<ResponseEntity<Void>> deletePokemon(@PathVariable(value = "id") String id) {
         return repository.findById(id)
                 .flatMap(existingPokemon ->
-                    repository.delete(existingPokemon)
-                            .then(Mono.just(ResponseEntity.ok().build()))
+                        repository.delete(existingPokemon)
+                                .then(Mono.just(ResponseEntity.ok().<Void>build()))
                 )
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
@@ -73,7 +72,7 @@ public class PokemonController {
     public Flux<PokemonEvent> getPokemonEvents() {
         return Flux.interval(Duration.ofSeconds(5))
                 .map(val ->
-                        new PokemonEvent(val, "Pokemonzitos")
+                        new PokemonEvent(val, "Product Event")
                 );
     }
 

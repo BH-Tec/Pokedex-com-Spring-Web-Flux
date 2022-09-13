@@ -17,12 +17,13 @@ public class PokedexApplication {
 	}
 
 	@Bean
-	CommandLineRunner init(ReactiveMongoOperations operations, PokemonRepository repository) {
+	CommandLineRunner init (ReactiveMongoOperations operations, PokemonRepository repository) {
 		return args -> {
 			Flux<Pokemon> pokemonFlux = Flux.just(
-					new Pokemon(null, "Blastoise", "Marisco", "Torrente", 9.00),
-					new Pokemon(null, "Caterpie", "Minhoca", "Poeira do excuto", 2.08),
-					new Pokemon(null, "Bulbassauro", "Semente", "Grandeza", 10.00))
+							new Pokemon(null, "Bulbassauro", "Semente", "OverGrow", 6.09),
+							new Pokemon(null, "Charizard", "Fogo", "Blaze", 90.05),
+							new Pokemon(null, "Caterpie", "Minhoca", "Poeira do Escudo", 2.09),
+							new Pokemon(null, "Blastoise", "Marisco", "Torrente", 6.09))
 					.flatMap(repository::save);
 			pokemonFlux
 					.thenMany(repository.findAll())
